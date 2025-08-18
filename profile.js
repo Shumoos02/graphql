@@ -416,7 +416,7 @@ function renderAuditGraph(auditData) {
         .reduce((sum, t) => sum + t.amount, 0);
 
     const ratio = downTotal > 0 ? upTotal / downTotal : upTotal > 0 ? Infinity : 0;
-    const ratioDisplay = downTotal > 0 ? ratio.toFixed(2) : upTotal > 0 ? "∞" : "0";
+    const ratioDisplay = downTotal > 0 ? ratio.toFixed(1) : upTotal > 0 ? "∞" : "0";
 
     const width = auditGraphElement.clientWidth;
     const height = auditGraphElement.clientHeight;
@@ -528,4 +528,5 @@ function polarToCartesian(centerX, centerY, radius, angleInRadians) {
         x: centerX + radius * Math.cos(angleInRadians),
         y: centerY + radius * Math.sin(angleInRadians)
     };
+
 }
