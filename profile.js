@@ -263,33 +263,60 @@ function renderXPGraph(transactions) {
     xAxis.setAttribute("stroke-width", "1");
     svg.appendChild(xAxis);
 
-    // Add X axis ticks (months)
+    // Add X axis ticks (months) - FIXED: Prevent overlapping labels
     const monthFormatter = new Intl.DateTimeFormat('en', { month: 'short' });
     const yearFormatter = new Intl.DateTimeFormat('en', { year: 'numeric' });
-    const uniqueMonths = [...new Set(data.map(d => 
-        `${d.date.getFullYear()}-${d.date.getMonth()}`
-    ))];
     
-    uniqueMonths.forEach(month => {
-        const [year, monthIndex] = month.split('-');
-        const date = new Date(year, monthIndex, 1);
+    // Group by year and month to prevent duplicates
+    const monthMap = new Map();
+    data.forEach(d => {
+        const year = d.date.getFullYear();
+        const month = d.date.getMonth();
+        const key = `${year}-${month}`;
+        
+        if (!monthMap.has(key)) {
+            monthMap.set(key, d.date);
+        }
+    });
+    
+    const uniqueMonths = Array.from(monthMap.values());
+    uniqueMonths.sort((a, b) => a - b);
+    
+    // Calculate minimum distance between labels (100px)
+    const minLabelDistance = 100;
+    let lastLabelX = -minLabelDistance;
+    
+    uniqueMonths.forEach(date => {
         const x = padding.left + (date - minDate) * xScale;
         
-        if (x > padding.left && x < width - padding.right) {
-            const tick = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            tick.setAttribute("d", `M${x},${height - padding.bottom} L${x},${height - padding.bottom + 5}`);
-            tick.setAttribute("stroke", "#333");
-            tick.setAttribute("stroke-width", "1");
-            svg.appendChild(tick);
-            
-            const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            label.setAttribute("x", x);
-            label.setAttribute("y", height - padding.bottom + 20);
-            label.setAttribute("text-anchor", "middle");
-            label.setAttribute("fill", "#555");
-            label.setAttribute("font-size", "10");
-            label.textContent = monthFormatter.format(date);
-            svg.appendChild(label);
+        // Only place label if there's enough space
+        if (x - lastLabelX >= minLabelDistance) {
+            if (x > padding.left && x < width - padding.right) {
+                // Tick mark
+                const tick = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                tick.setAttribute("d", `M${x},${height - padding.bottom} L${x},${height - padding.bottom + 5}`);
+                tick.setAttribute("stroke", "#333");
+                tick.setAttribute("stroke-width", "1");
+                svg.appendChild(tick);
+                
+                // Month label
+                const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                label.setAttribute("x", x);
+                label.setAttribute("y", height - padding.bottom + 20);
+                label.setAttribute("text-anchor", "middle");
+                label.setAttribute("fill", "#555");
+                label.setAttribute("font-size", "10");
+                
+                // Show year for January labels
+                if (date.getMonth() === 0) {
+                    label.textContent = `${monthFormatter.format(date)} '${date.getFullYear().toString().slice(2)}`;
+                } else {
+                    label.textContent = monthFormatter.format(date);
+                }
+                
+                svg.appendChild(label);
+                lastLabelX = x;
+            }
         }
     });
 
@@ -323,7 +350,7 @@ function renderXPGraph(transactions) {
         svg.appendChild(label);
     }
 
-    // Create line graph - FIXED: Ensure all points are included
+    // Create line graph - FIXED: Ensure all points are connected
     const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
     let linePath = '';
     for (let i = 0; i < data.length; i++) {
@@ -356,7 +383,7 @@ function renderXPGraph(transactions) {
         circle.setAttribute("fill", "#4285f4");
         svg.appendChild(circle);
         
-        // Add current XP label
+        // Add current XP label - position based on available space
         const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
         label.setAttribute("x", x + 10);
         label.setAttribute("y", y - 10);
@@ -530,3 +557,4 @@ function polarToCartesian(centerX, centerY, radius, angleInRadians) {
     };
 
 }
+
