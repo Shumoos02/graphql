@@ -15,35 +15,50 @@
     </div>
 
     <div class="profile-container">
-    <header class="profile-header">
-        <h1>Loading...</h1>
-        <button class="logout-btn" id="logoutBtn">Logout</button>
-    </header>
+        <header class="profile-header">
+            <div class="header-top">
+                <h1 class="profile-username">Loading...</h1>
+                <div class="user-meta" id="userInfo">
+                    <!-- User info will be inserted here by JavaScript -->
+                </div>
+            </div>
+            <button class="logout-btn" id="logoutBtn">Logout</button>
+        </header>
 
-    <main class="profile-content">
-        <section class="user-section">
-            <div class="user-card">
-                <h2>User Information</h2>
-                <div id="userInfo">Loading...</div>
-            </div>
-            <!-- <div class="stats-card"> -->
-                <!-- <h2>XP Summary</h2> -->
-                <div id="xpSummary">Loading...</div>
-            <!-- </div> -->
-        </section>
-
-        <section class="stats-section">
-            <div class="stats-card">
-                <h2>XP Progress</h2>
-                <div class="graph-container" id="xpGraph"></div>
-            </div>
-            <div class="stats-card">
-                <h2>Audit Ratio</h2>
-                <div class="graph-container" id="auditGraph"></div>
-            </div>
-        </section>
-    </main>
-</div>
+        <main class="profile-content">
+            <!-- Stats Overview Section -->
+            <section class="stats-section">
+                <!-- <div class="stats-card"> -->
+                    <!-- <div class="stats-header">
+                        <h2>XP Overview</h2>
+                    </div> -->
+                    <div class="stats-body">
+                        <div class="stats-grid" id="xpSummary">
+                            <!-- Stats will be inserted here by JavaScript -->
+                        </div>
+                    </div>
+                <!-- </div> -->
+            </section>
+            
+            <!-- Graphs Section -->
+            <section class="graphs-section">
+                <div class="graph-card">
+                    <div class="graph-header">
+                        <h2>XP Progress</h2>
+                    </div>
+                    <div class="graph-container" id="xpGraph"></div>
+                </div>
+                
+                <div class="graph-card">
+                    <div class="graph-header">
+                        <h2>Audit Ratio</h2>
+                    </div>
+                    <div class="graph-container" id="auditGraph"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
     <script src="auth.js"></script>
     <script src="profile.js"></script>
 </body>
