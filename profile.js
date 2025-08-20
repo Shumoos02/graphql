@@ -165,29 +165,25 @@ async function fetchAuditData(token) {
 
 // Display Functions
 function displayUserInfo(user) {
-    // Update profile header with username
-    const profileHeader = document.querySelector('.profile-header h1');
-    profileHeader.textContent = user.login;
+    const profileUsername = document.querySelector('.profile-username');
+    profileUsername.textContent = user.login;
 
-    // Update user info section
     const userInfoElement = document.getElementById('userInfo');
     userInfoElement.innerHTML = `
-        <div class="user-info-grid">
-            <div class="user-info-item">
-                <span class="info-label">Email:</span>
-                <span class="info-value">${user.email || 'Not provided'}</span>
-            </div>
-            <div class="user-info-item">
-                <span class="info-label">Member since:</span>
-                <span class="info-value">${new Date(user.createdAt).toLocaleDateString()}</span>
-            </div>
-            ${user.labels && user.labels.length > 0 ? `
-            <div class="user-info-item">
-                <span class="info-label">Cohort:</span>
-                <span class="info-value">${user.labels[0].labelName || 'Unknown'}</span>
-            </div>
-            ` : ''}
+        <div class="meta-item">
+            <span class="meta-icon">✉️</span>
+            <span>${user.email || 'Not provided'}</span>
         </div>
+        <div class="meta-item">
+            <span class="meta-icon">📅</span>
+            <span>${new Date(user.createdAt).toLocaleDateString()}</span>
+        </div>
+        ${user.labels && user.labels.length > 0 ? `
+        <div class="meta-item">
+            <span class="meta-icon">👥</span>
+            <span>${user.labels[0].labelName || 'Unknown'}</span>
+        </div>
+        ` : ''}
     `;
 }
 
@@ -198,7 +194,6 @@ function displayXPSummary(xpData) {
     const xpSummaryElement = document.getElementById('xpSummary');
     
     xpSummaryElement.innerHTML = `
-        <div class="stats-grid">
             <div class="stat-box">
                 <div class="stat-value">${totalXP.toLocaleString()}</div>
                 <div class="stat-label">Total XP</div>
@@ -211,7 +206,6 @@ function displayXPSummary(xpData) {
                 <div class="stat-value">${level}</div>
                 <div class="stat-label">Level</div>
             </div>
-        </div>
     `;
 }
 
@@ -555,6 +549,4 @@ function polarToCartesian(centerX, centerY, radius, angleInRadians) {
         x: centerX + radius * Math.cos(angleInRadians),
         y: centerY + radius * Math.sin(angleInRadians)
     };
-
 }
-
