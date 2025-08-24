@@ -1,3 +1,4 @@
+//links to use
 const API_BASE_URL = 'https://learn.reboot01.com';
 const SIGNIN_ENDPOINT = `${API_BASE_URL}/api/auth/signin`;
 const GRAPHQL_ENDPOINT = `${API_BASE_URL}/api/graphql-engine/v1/graphql`;
