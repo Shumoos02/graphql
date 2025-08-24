@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // First get the current eventId
         const eventId = await getCurrentEventId(token) || 1;
 
-        // Fetch all data in parallel for better performance
+        // Fetch data
         const [userData, xpData, auditData] = await Promise.all([
             fetchUserData(token),
             fetchXPData(token, eventId),
@@ -133,7 +133,8 @@ async function fetchXPData(token, eventId) {
         totalXP: data.data.transaction_aggregate.aggregate.sum?.amount || 0,
         transactions: data.data.transactions || [],
         auditRatio: data.data.user[0]?.auditRatio || 0,
-        level: data.data.level?.[0]?.amount || 0    };
+        level: data.data.level?.[0]?.amount || 0    
+    };
 }
 
 async function fetchAuditData(token) {
@@ -229,7 +230,7 @@ function renderXPGraph(transactions) {
 
     const width = xpGraphElement.clientWidth;
     const height = xpGraphElement.clientHeight;
-    const padding = { top: 30, right: 40, bottom: 50, left: 60 };
+    const padding = { top: 30, right: 80, bottom: 50, left: 100 }; // Increased left padding
 
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("width", "100%");
@@ -259,7 +260,6 @@ function renderXPGraph(transactions) {
 
     // Add X axis ticks (months) - FIXED: Prevent overlapping labels
     const monthFormatter = new Intl.DateTimeFormat('en', { month: 'short' });
-    const yearFormatter = new Intl.DateTimeFormat('en', { year: 'numeric' });
     
     // Group by year and month to prevent duplicates
     const monthMap = new Map();
@@ -397,12 +397,14 @@ function renderXPGraph(transactions) {
     xLabel.textContent = "Time";
     svg.appendChild(xLabel);
 
+    // Add Y axis label - FIXED POSITIONING
     const yLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    yLabel.setAttribute("x", 10);
+    yLabel.setAttribute("x", 25); // Positioned further left
     yLabel.setAttribute("y", height / 2);
     yLabel.setAttribute("text-anchor", "middle");
-    yLabel.setAttribute("transform", `rotate(-90, 10, ${height / 2})`);
+    yLabel.setAttribute("transform", `rotate(-90, 25, ${height / 2})`); // Rotate around new position
     yLabel.setAttribute("fill", "#333");
+    yLabel.setAttribute("font-size", "12");
     yLabel.textContent = "Cumulative XP";
     svg.appendChild(yLabel);
 
@@ -441,14 +443,21 @@ function renderAuditGraph(auditData) {
 
     const width = auditGraphElement.clientWidth;
     const height = auditGraphElement.clientHeight;
-    const radius = Math.min(width, height) / 2 - 40;
+    const radius = Math.min(width, height) / 2 - 60; // Reduced radius to make space for legend
     const centerX = width / 2;
-    const centerY = height / 2;
+    const centerY = height / 2 - 20; // Adjusted center to make space for title
 
+    // Calculate legend position
+    const legendY = centerY + radius + 50; // Increased space for legend
+    
+    // Adjust viewBox height to include legend
+    const totalHeight = legendY + 30; // Add padding for legend
+    
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("width", "100%");
     svg.setAttribute("height", "100%");
-    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    svg.setAttribute("viewBox", `0 0 ${width} ${totalHeight}`); // Use adjusted height
+    svg.setAttribute("preserveAspectRatio", "xMidYMid meet"); // Ensure proper scaling
 
     if (upTotal > 0 || downTotal > 0) {
         const upArc = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -487,8 +496,9 @@ function renderAuditGraph(auditData) {
     title.setAttribute("fill", "#333");
     title.textContent = "Audit Ratio (Up/Down)";
     svg.appendChild(title);
-
-    const legendY = centerY + radius + 30;
+    
+    // Create legend container
+    const legendContainer = document.createElementNS("http://www.w3.org/2000/svg", "g");
     
     const upLegend = document.createElementNS("http://www.w3.org/2000/svg", "g");
     upLegend.setAttribute("transform", `translate(${centerX - 100}, ${legendY})`);
@@ -507,7 +517,7 @@ function renderAuditGraph(auditData) {
     upLegendText.textContent = `Earned`;
     upLegend.appendChild(upLegendText);
     
-    svg.appendChild(upLegend);
+    legendContainer.appendChild(upLegend);
 
     const downLegend = document.createElementNS("http://www.w3.org/2000/svg", "g");
     downLegend.setAttribute("transform", `translate(${centerX + 20}, ${legendY})`);
@@ -526,7 +536,9 @@ function renderAuditGraph(auditData) {
     downLegendText.textContent = `Spent`;
     downLegend.appendChild(downLegendText);
     
-    svg.appendChild(downLegend);
+    legendContainer.appendChild(downLegend);
+    
+    svg.appendChild(legendContainer);
 
     auditGraphElement.appendChild(svg);
 }
