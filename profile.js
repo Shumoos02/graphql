@@ -382,9 +382,8 @@ function renderXPGraph(transactions) {
         label.setAttribute("x", x + 10);
         label.setAttribute("y", y - 10);
         label.setAttribute("fill", "#333");
-        label.setAttribute("font-weight", "bold");
-        label.setAttribute("font-size", "12");
-        label.textContent = `${lastPoint.cumulativeXP.toLocaleString()} XP`;
+        // label.setAttribute("class", "current-xp-label");
+        // label.textContent = `${lastPoint.cumulativeXP.toLocaleString()} XP`;
         svg.appendChild(label);
     }
 
