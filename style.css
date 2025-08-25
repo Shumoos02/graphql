@@ -529,12 +529,10 @@ input:focus {
   height: 100%;
 }
 
-
-
 .graph-container svg text {
   fill: var(--text-primary) !important;
   font-family: 'Segoe UI', Roboto, sans-serif !important;
-  font-size: 14px !important;
+  font-size: 14px;
   font-weight: 500;
 }
 
